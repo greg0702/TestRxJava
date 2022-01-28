@@ -7,16 +7,23 @@ import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Consumer
 import io.reactivex.functions.Predicate
 import io.reactivex.schedulers.Schedulers
 
 
 class MainActivity : AppCompatActivity() {
+
+    // disposable -> use to dispose of observers after they are not needed or is done using
+    private var disposables = CompositeDisposable()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // observables & observers
         val observable: Observable<Task> = Observable
             .fromIterable(DataSource.createTaskList())
             .subscribeOn(Schedulers.io()) //specify which thread to do it on & all things trying to see result need subscribe to it
@@ -39,8 +46,10 @@ class MainActivity : AppCompatActivity() {
 
         observable.subscribe(object : Observer<Task> {
 
+            // subscribe only return disposable if does not have onSubscribe method
             override fun onSubscribe(d: Disposable) {
                 Log.d(TAG,"onSubscribe: called.")
+                disposables.add(d) //add the disposable to the list
             }
 
             override fun onNext(task: Task) {
@@ -58,5 +67,23 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        //this allows the disposable to be added directly when call subscribe
+//        disposables.add(observable.subscribe(object: Consumer<Task>{
+//
+//            override fun accept(t: Task?) {
+//
+//            }
+//
+//        }))
+
     }
+
+    override fun onDestroy() {
+        //clear disposables when activity is destroyed
+        //place in onCleared() inside ViewModel
+        super.onDestroy()
+        disposables.clear() //this will remove all subscriber & observer but not disabling observables
+        //disposables.dispose() //this will not allow anything to subscribe to the observables
+    }
+
 }
