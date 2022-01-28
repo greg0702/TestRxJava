@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity() {
             .subscribeOn(Schedulers.io()) //specify which thread to do it on & all things trying to see result need subscribe to it
             .filter(Predicate { task ->
 
+                //filter all task to only return those that is completed
+
                 Log.d(TAG,"test: " + Thread.currentThread().name)
 
                 try {
