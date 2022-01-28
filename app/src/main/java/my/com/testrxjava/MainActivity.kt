@@ -30,19 +30,23 @@ class MainActivity : AppCompatActivity() {
             .filter(Predicate { task ->
 
                 //filter all task to only return those that is completed
+                //filter run in background thread as it is called to be done in io()
 
                 Log.d(TAG,"test: " + Thread.currentThread().name)
 
-                try {
-                    Thread.sleep(1000)
-                } catch (e: InterruptedException){
-                    e.printStackTrace()
-                }
+                //for observables & observers tutorial
+//                try {
+//                    Thread.sleep(1000)
+//                } catch (e: InterruptedException){
+//                    e.printStackTrace()
+//                }
 
                 return@Predicate task.isComplete()
 
             })
             .observeOn(AndroidSchedulers.mainThread()) //specify where the result will be observe on
+            //observers will be observing on the main thread
+            // shows the use of 2 operators (filter & observeOn())
 
         observable.subscribe(object : Observer<Task> {
 
