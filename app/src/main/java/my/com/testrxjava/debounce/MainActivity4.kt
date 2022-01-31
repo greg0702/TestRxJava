@@ -54,9 +54,8 @@ class MainActivity4 : AppCompatActivity() {
 
         // Subscribe an Observer
         observableQueryText.subscribe(object : Observer<String> {
-            override fun onSubscribe(d: Disposable) {
-                disposables.add(d)
-            }
+
+            override fun onSubscribe(d: Disposable) { disposables.add(d) }
 
             override fun onNext(s: String) {
                 Log.d(TAG, "onNext: time  since last request: " + (System.currentTimeMillis() - timeSinceLastRequest))
@@ -68,6 +67,7 @@ class MainActivity4 : AppCompatActivity() {
             }
 
             override fun onError(e: Throwable) {}
+
             override fun onComplete() {}
         })
 
