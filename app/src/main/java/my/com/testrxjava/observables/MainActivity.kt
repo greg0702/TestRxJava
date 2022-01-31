@@ -1,4 +1,4 @@
-package my.com.testrxjava
+package my.com.testrxjava.observables
 
 import android.content.ContentValues.TAG
 import android.os.Bundle
@@ -9,9 +9,11 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
 import io.reactivex.functions.Predicate
 import io.reactivex.schedulers.Schedulers
+import my.com.testrxjava.DataSource
+import my.com.testrxjava.R
+import my.com.testrxjava.Task
 
 
 class MainActivity : AppCompatActivity() {
