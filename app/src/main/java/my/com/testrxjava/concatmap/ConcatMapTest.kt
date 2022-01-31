@@ -1,8 +1,8 @@
-package my.com.testrxjava.flatmap
+package my.com.testrxjava.concatmap
 
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Observable
@@ -12,14 +12,14 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import my.com.testrxjava.R
+import my.com.testrxjava.flatmap.RecyclerViewAdapter
 import my.com.testrxjava.flatmap.models.Post
 import my.com.testrxjava.flatmap.request.ServiceGenerator
 import java.util.*
 
+class ConcatMapTest : AppCompatActivity() {
 
-class FlatMapTest : AppCompatActivity() {
-
-    private val TAG = "FlatMapTest"
+    private val TAG = "ConcatMapTest"
 
     //declare UI elements
     private var recyclerView: RecyclerView? = null
@@ -32,7 +32,7 @@ class FlatMapTest : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_flat_map_test)
+        setContentView(R.layout.activity_concat_map_test)
 
         recyclerView = findViewById(R.id.recycler_view)
 
@@ -40,8 +40,10 @@ class FlatMapTest : AppCompatActivity() {
 
         getPostsObservable()
             .subscribeOn(Schedulers.io())
-            .flatMap { post ->
-                return@flatMap getCommentsObservable(post) // create 100 observables sources & return an updated Observable<Post> with comments included
+            .concatMap { post ->
+                return@concatMap getCommentsObservable(post) // create 100 observables sources & return an updated Observable<Post> with comments included
+                //concatmap retrieve all posts in order; switchmap do similar things to concatmap and flatmap but only allow one observer to exist at a given time
+                //concatmap disadvantage is it slow but with order preserved; flatmap is fast but no order
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(object: Observer<Post> {
@@ -62,7 +64,6 @@ class FlatMapTest : AppCompatActivity() {
 
             })
 
-
     }
 
     //method to retrieve posts
@@ -77,7 +78,7 @@ class FlatMapTest : AppCompatActivity() {
                 return@flatMap Observable.fromIterable(posts)
                     .subscribeOn(Schedulers.io())
             } //return the list of posts as observable
-            // allows to map a list of object to become observable of object which can be emitted individually
+        // allows to map a list of object to become observable of object which can be emitted individually
     }
 
     private fun updatePost(p: Post) {
